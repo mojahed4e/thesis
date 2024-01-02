@@ -1,0 +1,276 @@
+DROP TABLE IF EXISTS `thesis_rubric_template`;
+CREATE TABLE IF NOT EXISTS `thesis_rubric_template` (
+  `template_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `criteria` varchar(1000)  NULL DEFAULT NULL COMMENT 'Criteria',
+  `mark_percentage` int(10) NOT NULL DEFAULT '0' COMMENT 'Mark Percentage',  
+  `does_not_meet_expectations` text COLLATE utf8mb4_unicode_ci,
+  `meets_expectations` text COLLATE utf8mb4_unicode_ci,
+  `exceeds_expectations` text COLLATE utf8mb4_unicode_ci,    
+  `status` tinyint(5) NOT NULL DEFAULT '1' COMMENT '1 - Active , 2 - Deleted',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+
+DROP TABLE IF EXISTS `thesis_rubric_details`;
+CREATE TABLE IF NOT EXISTS `thesis_rubric_details` (
+  `rubric_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `rubric_template_id` int(10) NOT NULL DEFAULT '0' COMMENT 'Rubric Template Id',  
+  `created_by` int(10) NOT NULL DEFAULT '0' COMMENT 'User Id',
+  `item_id` int(10) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'Item Id',
+  `term_id` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Term Id',  
+  `does_not_meet_expectations` text COLLATE utf8mb4_unicode_ci,
+  `meets_expectations` int(10) NOT NULL DEFAULT '0',
+  `exceeds_expectations` int(10) NOT NULL DEFAULT '0',
+  `created_date` timestamp NULL DEFAULT NULL,
+  `rubric_type` tinyint(5) NOT NULL DEFAULT '1' COMMENT '1 - Report Rubric,  2 - Presentation Rubric',  
+  `status` tinyint(5) NOT NULL DEFAULT '1' COMMENT '1 - Active , 2 - Deleted',
+  PRIMARY KEY (`rubric_id`),
+  KEY `thesis_rubric_details_rubric_template_id_foreign` (`rubric_template_id`),
+  KEY `thesis_rubric_details_item_id_foreign` (`item_id`),
+  KEY `thesis_rubric_details_created_by_foreign` (`user_id`) USING BTREE  
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+
+
+
+
+BEGIN
+  IF  NEW.item_id <> OLD.item_id
+    OR NEW.user_id <> OLD.user_id
+    OR NEW.manager_id <> OLD.manager_id
+    OR NEW.supervisor_id <> OLD.supervisor_id
+    OR NEW.request_detail_id <> OLD.request_detail_id
+    OR NEW.milestone_achived_last_meeting <> OLD.milestone_achived_last_meeting
+    OR NEW.discussed_this_meeting <> OLD.discussed_this_meeting
+    OR NEW.next_meeting_agenda <> OLD.next_meeting_agenda
+    OR NEW.meeting_date <> OLD.meeting_date
+    OR NEW.next_meeting_date <> OLD.next_meeting_date
+    OR NEW.completion_date <> OLD.completion_date
+    OR NEW.meeting_log_type <> OLD.meeting_log_type
+    OR NEW.meeting_log_seq  <> OLD.meeting_log_seq
+    OR NEW.student_submit_status <> OLD.student_submit_status
+    OR NEW.supervisor_approval_status <> OLD.supervisor_approval_status
+    OR NEW.manager_approval_status <> OLD.manager_approval_status
+    OR NEW.panel_approval_status <> OLD.panel_approval_status
+    OR NEW.status  <> OLD.status 
+  THEN
+    INSERT INTO 
+      meeting_logs_log
+    SET
+      meeting_logs_id = OLD.id,
+      item_id = OLD.item_id,        
+      user_id = OLD.user_id,
+      manager_id = OLD.manager_id,
+      supervisor_id = OLD.supervisor_id,
+      request_detail_id = OLD.request_detail_id,
+      milestone_achived_last_meeting = OLD.milestone_achived_last_meeting,
+      discussed_this_meeting = OLD.discussed_this_meeting,
+      next_meeting_agenda = OLD.next_meeting_agenda,
+      meeting_date = OLD.meeting_date,
+      next_meeting_date = OLD.next_meeting_date,
+      completion_date = OLD.completion_date,
+      meeting_log_type = OLD.meeting_log_type,            
+      meeting_log_seq = OLD.meeting_log_seq,
+      student_submit_status = OLD.student_submit_status,      
+      supervisor_approval_status = OLD.supervisor_approval_status,
+      manager_approval_status = OLD.manager_approval_status,
+      panel_approval_status = OLD.panel_approval_status,
+      status = OLD.status,
+      created_date = OLD.created_date;      
+  END if;
+END
+
+root@localhost
+
+
+
+
+BEGIN
+  IF  NEW.name <> OLD.name
+    OR NEW.description <> OLD.description
+    OR NEW.term_id <> OLD.term_id
+        OR NEW.date <> OLD.date
+    OR NEW.category_id <> OLD.category_id
+    OR NEW.created_by <> OLD.created_by
+        OR NEW.modified_by <> OLD.modified_by
+    OR NEW.assigned_to <> OLD.assigned_to
+    OR NEW.requested_by <> OLD.requested_by
+    OR NEW.approval_status <> OLD.approval_status
+    OR NEW.status <> OLD.status
+    OR NEW.created_at <> OLD.created_at
+    OR NEW.updated_at  <> OLD.updated_at 
+  THEN
+    INSERT INTO 
+      items_log
+    SET
+      name = OLD.name,        
+      item_id = OLD.id,
+            date = OLD.date,
+      description = OLD.description,
+      term_id = OLD.term_id,
+      category_id = OLD.category_id,
+      created_by = OLD.created_by,
+            modified_by = OLD.modified_by,
+      assigned_to = OLD.assigned_to,
+      requested_by = OLD.requested_by,
+      approval_status = OLD.approval_status,      
+      status = OLD.status,
+            created_at = OLD.created_at,
+      updated_at = OLD.updated_at;      
+  END if;
+END
+
+
+
+
+
+DROP TABLE IF EXISTS `thesis_progress_timelines`;
+CREATE TABLE IF NOT EXISTS `thesis_progress_timeline` (
+  `timeline_progress_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,    
+  `timeline_id` int(10) UNSIGNED NOT NULL COMMENT 'Timeline ID',
+  `item_id` int(11) DEFAULT NULL COMMENT 'Cohort Id',    
+  `created_by` int(10) DEFAULT NULL COMMENT 'Folder Creaded By',
+  `term1_completion` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes1` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes2` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes3` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes4` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes5` timestamp NULL DEFAULT NULL,
+  `term2_completion` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes1` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes2` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes3` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes4` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes5` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `status` tinyint(5) NOT NULL DEFAULT '1' COMMENT '1 - Active , 2 - Deleted',
+  PRIMARY KEY (`timeline_progress_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `thesis_progress_timelines_log`;
+CREATE TABLE IF NOT EXISTS `thesis_progress_timeline_log` (
+  `timeline_progress_log_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, 
+  `timeline_progress_id` int(10) UNSIGNED NOT NULL,    
+  `timeline_id` int(10) UNSIGNED NOT NULL COMMENT 'Timeline ID',  
+  `item_id` int(11) DEFAULT NULL COMMENT 'Item Id',
+  `created_by` int(10) DEFAULT NULL COMMENT 'Folder Creaded By',
+  `term1_completion` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes1` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes2` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes3` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes4` timestamp NULL DEFAULT NULL,
+  `t1_meeting_minutes5` timestamp NULL DEFAULT NULL,
+  `term2_completion` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes1` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes2` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes3` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes4` timestamp NULL DEFAULT NULL,
+  `t2_meeting_minutes5` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `status` tinyint(5) NOT NULL DEFAULT '1' COMMENT '1 - Active , 2 - Deleted',
+  PRIMARY KEY (`timeline_progress_log_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+BEGIN
+  IF  NEW.item_id <> OLD.item_id
+    OR NEW.user_id <> OLD.user_id
+    OR NEW.manager_id <> OLD.manager_id
+    OR NEW.supervisor_id <> OLD.supervisor_id
+    OR NEW.request_detail_id <> OLD.request_detail_id
+    OR NEW.milestone_achived_last_meeting <> OLD.milestone_achived_last_meeting
+    OR NEW.discussed_this_meeting <> OLD.discussed_this_meeting
+    OR NEW.next_meeting_agenda <> OLD.next_meeting_agenda
+    OR NEW.meeting_date <> OLD.meeting_date
+    OR NEW.next_meeting_date <> OLD.next_meeting_date
+    OR NEW.completion_date <> OLD.completion_date
+    OR NEW.meeting_log_type <> OLD.meeting_log_type
+    OR NEW.meeting_log_seq  <> OLD.meeting_log_seq
+    OR NEW.student_submit_status <> OLD.student_submit_status
+    OR NEW.supervisor_approval_status <> OLD.supervisor_approval_status
+    OR NEW.manager_approval_status <> OLD.manager_approval_status
+    OR NEW.panel_approval_status <> OLD.panel_approval_status
+    OR NEW.status  <> OLD.status 
+  THEN
+    INSERT INTO 
+      meeting_logs_log
+    SET
+      meeting_logs_id = OLD.id,
+      item_id = OLD.item_id,        
+      user_id = OLD.user_id,
+      manager_id = OLD.manager_id,
+      supervisor_id = OLD.supervisor_id,
+      request_detail_id = OLD.request_detail_id,
+      milestone_achived_last_meeting = OLD.milestone_achived_last_meeting,
+      discussed_this_meeting = OLD.discussed_this_meeting,
+      next_meeting_agenda = OLD.next_meeting_agenda,
+      meeting_date = OLD.meeting_date,
+      next_meeting_date = OLD.next_meeting_date,
+      completion_date = OLD.completion_date,
+      meeting_log_type = OLD.meeting_log_type,            
+      meeting_log_seq = OLD.meeting_log_seq,
+      student_submit_status = OLD.student_submit_status,      
+      supervisor_approval_status = OLD.supervisor_approval_status,
+      manager_approval_status = OLD.manager_approval_status,
+      panel_approval_status = OLD.panel_approval_status,
+      status = OLD.status,
+      created_date = OLD.created_date;      
+  END if;
+END
+
+
+
+BEGIN
+  IF  NEW.timeline_id <> OLD.timeline_id
+    OR NEW.item_id <> OLD.item_id
+    OR NEW.term1_completion <> OLD.term1_completion
+    OR NEW.t1_meeting_minutes1 <> OLD.t1_meeting_minutes1
+    OR NEW.t1_meeting_minutes2 <> OLD.t1_meeting_minutes2
+    OR NEW.t1_meeting_minutes3 <> OLD.t1_meeting_minutes3
+    OR NEW.t1_meeting_minutes4 <> OLD.t1_meeting_minutes4    
+    OR NEW.t1_meeting_minutes5 <> OLD.t1_meeting_minutes5
+    OR NEW.term2_completion <> OLD.term2_completion
+    OR NEW.t2_meeting_minutes1 <> OLD.t2_meeting_minutes1
+    OR NEW.t2_meeting_minutes2 <> OLD.t2_meeting_minutes2
+    OR NEW.t2_meeting_minutes3  <> OLD.t2_meeting_minutes3
+    OR NEW.t2_meeting_minutes4 <> OLD.t2_meeting_minutes4
+    OR NEW.t2_meeting_minutes5 <> OLD.t2_meeting_minutes5
+    OR NEW.updated_at <> OLD.updated_at
+    OR NEW.status  <> OLD.status 
+  THEN
+    INSERT INTO 
+      thesis_progress_timelines_log
+    SET
+      timeline_progress_id = OLD.timeline_progress_id,
+      timeline_id = OLD.timeline_id,
+      item_id = OLD.item_id,
+      term1_completion = OLD.term1_completion,              
+      t1_meeting_minutes1 = OLD.t1_meeting_minutes1,
+      t1_meeting_minutes2 = OLD.t1_meeting_minutes2,
+      t1_meeting_minutes3 = OLD.t1_meeting_minutes3,
+      t1_meeting_minutes4 = OLD.t1_meeting_minutes4,
+      t1_meeting_minutes5 = OLD.t1_meeting_minutes5,
+      term2_completion = OLD.term2_completion,
+      t2_meeting_minutes1 = OLD.t2_meeting_minutes1,
+      t2_meeting_minutes2 = OLD.t2_meeting_minutes2,
+      t2_meeting_minutes3 = OLD.t2_meeting_minutes3,
+      t2_meeting_minutes4 = OLD.t2_meeting_minutes4,            
+      t2_meeting_minutes5 = OLD.t2_meeting_minutes5,
+      updated_at = OLD.updated_at,           
+      status = OLD.status,
+      created_at = OLD.created_at;      
+  END if;
+END
+
+root@localhost
