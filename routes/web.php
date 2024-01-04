@@ -53,6 +53,7 @@ Route::group(['middleware' => 'auth'], function () {
 		Route::get('mythesis/detail', ['as' => 'mythesis.detail', 'uses' => 'MythesisController@vewThesisDetails']);
 		Route::get('mythesis/assigned', ['as' => 'mythesis.assigned', 'uses' => 'MythesisController@vewAssignedThesisDetails']);
 		Route::get('mythesis/examine', ['as' => 'mythesis.examine', 'uses' => 'MythesisController@vewExamineThesisDetails']);
+		Route::get('mythesis/grade-book', ['as' => 'mythesis.grade-book', 'uses' => 'MythesisController@vewGradeBookInfo']);
 		Route::post('mythesis/{id}/request-approve', ['as' => 'mythesis.request-approve', 'uses' => 'MythesisController@updateThesisRequestApprovalStatus']);
 		Route::post('mythesis/{id}/request-accept', ['as' => 'mythesis.request-accept', 'uses' => 'MythesisController@updateThesisRequestAcceptStatus']);
 		Route::post('mythesis/{id}/comment-update', ['as' => 'mythesis.comment-update', 'uses' => 'MythesisController@updateThesisComments']);

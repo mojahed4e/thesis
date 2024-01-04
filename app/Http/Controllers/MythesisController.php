@@ -32,7 +32,8 @@ use App\ThesisProgressTrackings;
 use App\ThesisTimeline;
 use App\ThesisProgressTimeline;
 use App\ThesisRequestDetails;
-use App\ThesisRubricDetails;  
+use App\ThesisRubricDetails; 
+use App\ThesisRubricTemplate; 
 use App\TermProgressChecklist;
 use App\MessageViewesTracking;
 use App\MeetingLogs;
@@ -115,6 +116,232 @@ class MythesisController extends Controller
 		return view('items.panel.index', ['items' => $items,'requestinfo' => $reqDetails,'supervisors' => $aSupervisors,'cohorts' => $aCohorts,'programs' => $aProgams]);
     }
 
+    /**
+     * Display a listing of the items
+     *
+     * @param \App\Item  $model
+     * @return \Illuminate\View\View
+     */
+    public function vewGradeBookInfo(Request $request, Item $item, User $userModel, TermProgressChecklist $progress, Term $termModel, Category $categoryModel, MeetingLogs $meetinglogModel, GroupMember $groupmemberModel, ItemAssignment $assignmentModel,ThesisAttachments $attachment, ThesisProgressTrackings $tracking, ThesisRequestDetails $requsetModel, ThesisProgressTimeline $progresstimeline,PanelMembers $panelmembers)
+    {
+    	$aCohorts = $item->Status()->select('terms.*')
+								->join('terms','terms.id','=','items.term_id')
+								->where('items.request_detail_id','>',0)
+								->distinct()->get();
+		$aTemplateMarkPercent = array();
+		$aTemplateInfo = ThesisRubricTemplate::Status()->get();
+		if(count($aTemplateInfo) > 0){
+			foreach($aTemplateInfo as $template){
+				$aTemplateMarkPercent[$template->template_id]['mark_percentage'] = $template->mark_percentage;
+				$aTemplateMarkPercent[$template->template_id]['calculation_percentage'] = $template->calculation_percentage;
+			}	
+		}
+		$aGradeBookDataSet = array();
+		if(count($aCohorts) > 0){
+			for($cho_loop = 0; $cho_loop < count($aCohorts); $cho_loop++){
+				$aUserData = $userModel->select('items.name as thesis_name','programs.name as program_name','student.name as student_name','supervisor.name as supervisor_name','terms.name as term_name','terms.id as term_id','items.id as item_id','student.student_id as student_id')
+									->join('items','items.requested_by','=','users.id')
+									->join('programs', 'programs.id','=','items.program_id')
+									->join('users as student', 'student.id','=','items.requested_by')
+									->join('users as supervisor','supervisor.id','=','items.assigned_to')
+									->join('terms','terms.id','=','items.term_id')
+									->where(['items.status' => 1,'users.status' => 1,'items.term_id' => $aCohorts[$cho_loop]->id])
+									->get();
+				$aGradeBookDataSet[$aCohorts[$cho_loop]->id]['user_data'] = $aUserData;
+				if(count($aUserData) > 0){
+					for($user_loop = 0 ; $user_loop < count($aUserData); $user_loop++){
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter1_score'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter2_overallscore'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['presentation_overallscore'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['overallaggregate_score'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['letter_grade'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['points_grade'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_final_overallscore'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_presentation_overallscore'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_overallaggregate_score'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_letter_grade'] = '';
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_points_grade'] = '';
+
+						$aChapIRubricInfo = ThesisRubricDetails::select('thesis_rubric_details.*')->where(['item_id' => $aUserData[$user_loop]->item_id,'rubric_term' => 1, 'rubric_type' => 1])->get();
+						$vChaper1Score = 0;
+						$vChaper2Score = 0;
+						$vPresentationScore = 0;
+						if(count($aChapIRubricInfo) > 0){
+							for($chap1_loop = 0; $chap1_loop < count($aChapIRubricInfo); $chap1_loop++){
+								if($aChapIRubricInfo[$chap1_loop]->rubric_template_id > 0) {
+											$vChaper1Score += ($aChapIRubricInfo[$chap1_loop]->criteria_score_percent*$aTemplateMarkPercent[$aChapIRubricInfo[$chap1_loop]->rubric_template_id]['mark_percentage'])/100*$aTemplateMarkPercent[$aChapIRubricInfo[$chap1_loop]->rubric_template_id]['calculation_percentage']/100;
+										}
+
+							}			
+						}
+						$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter1_score'] = $vChaper1Score;
+
+						$panelmembers = $userModel->select('users.id','users.name','users.email')
+							            ->join('panel_members','panel_members.user_id','=','users.id')
+							            ->where(['panel_members.item_id' => $aUserData[$user_loop]->item_id,'panel_members.status' => 1])->get();
+						#====== Term - I Grade information
+						$aChaper2ScoreDet = array();
+						$aPresentationScoreDet = array();
+						$vRubricCount = 0;
+						$vChaper2Score = 0;
+						$vPresentationScore = 0;
+						if(count($panelmembers) > 0){
+							for($memloop = 0; $memloop < count($panelmembers); $memloop++){								
+								$aChapIIRubricInfo = ThesisRubricDetails::where(['item_id' => $aUserData[$user_loop]->item_id,'rubric_term' => 1, 'rubric_type' => 2, 'status' => 1, 'created_by' => $panelmembers[$memloop]->id])->get();
+								$vChaper2Score = 0;
+								$vPresentationScore = 0;
+								if(count($aChapIIRubricInfo) > 0){
+									$vRubricCount++;
+									for($chap2_loop = 0; $chap2_loop < count($aChapIIRubricInfo); $chap2_loop++) {
+										if($aChapIIRubricInfo[$chap2_loop]->rubric_template_id > 0) {
+											if($chap2_loop < 4){
+												$vChaper2Score += ($aChapIIRubricInfo[$chap2_loop]->criteria_score_percent*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['mark_percentage'])/100*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['calculation_percentage']/100;
+											}
+											else {
+												$vPresentationScore += ($aChapIIRubricInfo[$chap2_loop]->criteria_score_percent*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['mark_percentage'])/100*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['calculation_percentage']/100;
+											}
+										}	
+
+									}
+								}
+								$aChaper2ScoreDet[$panelmembers[$memloop]->id]['chapter2_score'] = $vChaper2Score;
+								$aPresentationScoreDet[$panelmembers[$memloop]->id]['presentation_score'] = $vPresentationScore;
+								
+							}																
+						}
+
+						if($vRubricCount == count($panelmembers)) {
+							$vOverallChaper2Score = 0;
+							$vOverallPresentationScore = 0;
+							$vOverAllAggregateScore = '--';
+							$vSuccessRubric = 0;
+							if(count($panelmembers) > 0){								
+								for($score_loop = 0; $score_loop < count($panelmembers); $score_loop++){
+									if(!empty($aChaper2ScoreDet[$panelmembers[$score_loop]->id]['chapter2_score'])){
+										$vOverallChaper2Score += $aChaper2ScoreDet[$panelmembers[$score_loop]->id]['chapter2_score'];
+										$vSuccessRubric++;
+									}
+									if(!empty($aPresentationScoreDet[$panelmembers[$score_loop]->id]['presentation_score'])){
+										$vOverallPresentationScore += $aPresentationScoreDet[$panelmembers[$score_loop]->id]['presentation_score'];
+									}
+								}
+								
+
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter2_overallscore'] = $vOverallChaper2Score/$vRubricCount;
+
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['presentation_overallscore'] = $vOverallPresentationScore/$vRubricCount;
+
+								if($vOverallChaper2Score > 0 && $vOverallPresentationScore > 0 && !empty($aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter1_score'])) {
+									$vOverAllAggregateScore = $aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter1_score']+ $aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['chapter2_overallscore'] + $aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['presentation_overallscore'];
+								}
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['overallaggregate_score'] = $vOverAllAggregateScore;
+							}
+							
+							$aGradeScale = array();
+							if((int)$vOverAllAggregateScore){
+								$aGradeScale = GradingScales::select('*')
+								 ->where('range_from','<=',round($vOverAllAggregateScore))
+		    					 ->where('range_to','>=',round($vOverAllAggregateScore))->get();
+							}
+							if(count($aGradeScale) > 0){								
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['letter_grade'] = $aGradeScale[0]->letter_grade;
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['points_grade'] = $aGradeScale[0]->points;
+							}
+							else{
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['letter_grade'] = '--';
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['points_grade'] = '--';
+							}
+							
+						}
+						#-- End of Term-I grade info
+
+						#----- Term - II Grade Info
+						$aFinalReportScoreDet = array();
+						$aFinalPresentationScoreDet = array();
+						$vFinalRubricCount = 0;
+						$vFinalReportScore = 0;
+						$vFinalPresentationScore = 0;
+						if(count($panelmembers) > 0){
+							for($memloop = 0; $memloop < count($panelmembers); $memloop++){								
+								$aChapIIRubricInfo = ThesisRubricDetails::where(['item_id' => $aUserData[$user_loop]->item_id,'rubric_term' => 1, 'rubric_type' => 2, 'status' => 1, 'created_by' => $panelmembers[$memloop]->id])->get();
+								$vFinalReportScore = 0;
+								$vFinalPresentationScore = 0;
+								if(count($aChapIIRubricInfo) > 0){
+									$vFinalRubricCount++;
+									for($chap2_loop = 0; $chap2_loop < count($aChapIIRubricInfo); $chap2_loop++) {
+										if($aChapIIRubricInfo[$chap2_loop]->rubric_template_id > 0) {
+											if($chap2_loop < 4){
+												$vFinalReportScore += ($aChapIIRubricInfo[$chap2_loop]->criteria_score_percent*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['mark_percentage'])/100*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['calculation_percentage']/100;
+											}
+											else {
+												$vFinalPresentationScore += ($aChapIIRubricInfo[$chap2_loop]->criteria_score_percent*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['mark_percentage'])/100*$aTemplateMarkPercent[$aChapIIRubricInfo[$chap2_loop]->rubric_template_id]['calculation_percentage']/100;
+											}
+										}	
+
+									}
+								}
+								$aFinalReportScoreDet[$panelmembers[$memloop]->id]['term2_final_overallscore'] = $vFinalReportScore;
+								$aFinalPresentationScoreDet[$panelmembers[$memloop]->id]['term2_presentation_overallscore'] = $vFinalPresentationScore;
+								
+							}																
+						}
+
+						if($vFinalRubricCount == count($panelmembers)) {
+							$vOverallFinalScore = 0;
+							$vOverallFinalPresentationScore = 0;
+							$vOverAllFinalAggregateScore = '--';
+							$vSuccessRubric = 0;
+							if(count($panelmembers) > 0){								
+								for($score_loop = 0; $score_loop < count($panelmembers); $score_loop++){
+									if(!empty($aFinalReportScoreDet[$panelmembers[$score_loop]->id]['chapter2_score'])){
+										$vOverallFinalScore += $aFinalReportScoreDet[$panelmembers[$score_loop]->id]['chapter2_score'];
+										$vSuccessRubric++;
+									}
+									if(!empty($aFinalPresentationScoreDet[$panelmembers[$score_loop]->id]['presentation_score'])){
+										$vOverallFinalPresentationScore += $aFinalPresentationScoreDet[$panelmembers[$score_loop]->id]['presentation_score'];
+									}
+								}
+								
+
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_final_overallscore'] = $vOverallFinalScore/$vFinalRubricCount;
+
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_presentation_overallscore'] = $vOverallFinalPresentationScore/$vFinalRubricCount;
+
+								if($vOverallFinalScore > 0 && $vOverallFinalPresentationScore > 0) {
+									$vOverAllFinalAggregateScore = $aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_final_overallscore'] + $aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_presentation_overallscore'];
+								}
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_overallaggregate_score'] = $vOverAllFinalAggregateScore;
+							}
+							
+							$aGradeScale = array();
+							if((int)$vOverAllFinalAggregateScore){
+								$aGradeScale = GradingScales::select('*')
+								 ->where('range_from','<=',round($vOverAllFinalAggregateScore))
+		    					 ->where('range_to','>=',round($vOverAllFinalAggregateScore))->get();
+							}
+							if(count($aGradeScale) > 0){								
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_letter_grade'] = $aGradeScale[0]->letter_grade;
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_points_grade'] = $aGradeScale[0]->points;
+							}
+							else{
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_letter_grade'] = '--';
+								$aGradeBookDataSet[$aCohorts[$cho_loop]->id][$aUserData[$user_loop]->student_id]['term2_points_grade'] = '--';
+							}
+							
+						}
+
+					}
+					
+				}
+			}
+		}
+		
+		$aProgams = $item->Status()->select('programs.*')
+								->join('programs','programs.id','=','items.program_id')->distinct()->get();
+
+		return view('mythesis.manager.gradebook', ['gradebookset' => $aGradeBookDataSet,'cohorts' => $aCohorts,'programs' => $aProgams]);
+    }
+
 	
 	/**
      * Show the form for editing the specified item
@@ -126,6 +353,7 @@ class MythesisController extends Controller
      */
     public function vewThesisDetails(Request $request, Item $item, User $userModel, TermProgressChecklist $progress, Term $termModel, Category $categoryModel, MeetingLogs $meetinglogModel, GroupMember $groupmemberModel, ItemAssignment $assignmentModel,ThesisAttachments $attachment, ThesisProgressTrackings $tracking, ThesisRequestDetails $requsetModel, ThesisProgressTimeline $progresstimeline)
     {
+		print_r($_REQUEST);die;
 		$requested = 0;
 		$thesisprogress['progress'] = [];		
 		$thesisprogress['attachments'] = [];		
@@ -133,7 +361,7 @@ class MythesisController extends Controller
 			$vReqThesis = $item->Status()->where('requested_by', '=', Auth::user()->id)->get();
 			if(count($vReqThesis) > 0) {			
 				$thesis_id = $vReqThesis[0]->id;				
-				$request_detail_id = $vReqThesis[0]->request_detail_id;
+			echo 	$request_detail_id = $vReqThesis[0]->request_detail_id;
 				$requested = 1;
 				$item = Item::find($thesis_id);
 			}			
@@ -217,6 +445,13 @@ class MythesisController extends Controller
 			else
 				$vTermProgressStat = 1;
 		}
+
+
+		$reqDetails = $requsetModel->select('thesis_request_details.*')
+		->join('items','items.request_detail_id','=','thesis_request_details.id')
+		->where(['thesis_request_details.id'=> $request_detail_id])->get();
+
+		dd($reqDetails);
 		
         return view($vResourceFile, [
             'item' => $item->load('tags'),

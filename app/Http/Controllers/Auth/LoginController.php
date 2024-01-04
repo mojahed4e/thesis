@@ -67,57 +67,57 @@ class LoginController extends Controller
     }
 	
 	
-	public function attemptLogin(Request $request)
-	{
+	// public function attemptLogin(Request $request)
+	// {
 		
-		$credentials = $request->only('email', 'password');
-        $email		 = $credentials['email'];
-        $password 	 = $credentials['password'];		
+	// 	$credentials = $request->only('email', 'password');
+    //     $email		 = $credentials['email'];
+    //     $password 	 = $credentials['password'];		
 		
-		$aUsername = preg_split('/@/', $email, -1, PREG_SPLIT_OFFSET_CAPTURE);
+	// 	$aUsername = preg_split('/@/', $email, -1, PREG_SPLIT_OFFSET_CAPTURE);
 				
-		//http://apiws/ldap/verify/{username}/{password}
-		$vReqPath1 = "http://apiws/ldap/verify/".$aUsername[0][0]."/".$password;
-		$vReqPath = "http://apiws2/ldap/verify/";
+	// 	//http://apiws/ldap/verify/{username}/{password}
+	// 	$vReqPath1 = "http://apiws/ldap/verify/".$aUsername[0][0]."/".$password;
+	// 	$vReqPath = "http://apiws2/ldap/verify/";
 
-		$headers = [		   
-		    'username:'.$aUsername[0][0],
-		    'password:'.$password
-		];
+	// 	$headers = [		   
+	// 	    'username:'.$aUsername[0][0],
+	// 	    'password:'.$password
+	// 	];
 				
-		$curl = curl_init();
-		curl_setopt_array($curl, array(
-			CURLOPT_URL => $vReqPath,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 0,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_HTTPHEADER => $headers,
-			CURLOPT_CUSTOMREQUEST => "GET",
-		));
-		$ch = curl_exec($curl);
-		//use Storage;
-		//Storage::put("user-log/".rand(10,100).'_user_login_log.txt', $vReqPath1."    ==== respose ====> ".$ch); 
-		$aAuthreponse = json_decode($ch);
+	// 	$curl = curl_init();
+	// 	curl_setopt_array($curl, array(
+	// 		CURLOPT_URL => $vReqPath,
+	// 		CURLOPT_RETURNTRANSFER => true,
+	// 		CURLOPT_ENCODING => "",
+	// 		CURLOPT_MAXREDIRS => 10,
+	// 		CURLOPT_TIMEOUT => 0,
+	// 		CURLOPT_FOLLOWLOCATION => true,
+	// 		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+	// 		CURLOPT_HTTPHEADER => $headers,
+	// 		CURLOPT_CUSTOMREQUEST => "GET",
+	// 	));
+	// 	$ch = curl_exec($curl);
+	// 	//use Storage;
+	// 	//Storage::put("user-log/".rand(10,100).'_user_login_log.txt', $vReqPath1."    ==== respose ====> ".$ch); 
+	// 	$aAuthreponse = json_decode($ch);
 		
-		if($aAuthreponse->result == 'true') {
+	// 	if($aAuthreponse->result == 'true') {
 			
-			$user = User::where('email', '=', $credentials['email'])->first();
-			if (empty($user)) {
-				return false;
-			}
+	// 		$user = User::where('email', '=', $credentials['email'])->first();
+	// 		if (empty($user)) {
+	// 			return false;
+	// 		}
 
-			if(Auth::loginUsingId($user->id)){
-				return redirect('Home');
-			}			
-		}
-		else { 
-			// the user doesn't exist in the LDAP server or the password is wrong
-			// log error
-			return false;
-		}
-	}	
+	// 		if(Auth::loginUsingId($user->id)){
+	// 			return redirect('Home');
+	// 		}			
+	// 	}
+	// 	else { 
+	// 		// the user doesn't exist in the LDAP server or the password is wrong
+	// 		// log error
+	// 		return false;
+	// 	}
+	// }	
 	
 }
