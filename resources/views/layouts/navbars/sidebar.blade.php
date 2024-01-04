@@ -98,6 +98,12 @@
                   <span class="sidebar-normal"> {{ __('Thesis Timeline') }}</span>
               </a>
             </li>
+            <li class="nav-item{{ $activePage == 'thesis-gradebook' ? ' active' : '' }}">
+              <a class="nav-link" href="{{ route('mythesis.grade-book') }}">
+                <i class="icon_clr fas fa-sliders-h"></i>
+                  <span class="sidebar-normal"> {{ __('Grade Book') }}</span>
+              </a>
+            </li>
             @endif 
             @can('manage-items', App\User::class)
               <li class="nav-item{{ $activePage == 'item-management' ? ' active' : '' }}">
