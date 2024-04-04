@@ -353,7 +353,6 @@ class MythesisController extends Controller
      */
     public function vewThesisDetails(Request $request, Item $item, User $userModel, TermProgressChecklist $progress, Term $termModel, Category $categoryModel, MeetingLogs $meetinglogModel, GroupMember $groupmemberModel, ItemAssignment $assignmentModel,ThesisAttachments $attachment, ThesisProgressTrackings $tracking, ThesisRequestDetails $requsetModel, ThesisProgressTimeline $progresstimeline)
     {
-		print_r($_REQUEST);die;
 		$requested = 0;
 		$thesisprogress['progress'] = [];		
 		$thesisprogress['attachments'] = [];		
@@ -361,7 +360,7 @@ class MythesisController extends Controller
 			$vReqThesis = $item->Status()->where('requested_by', '=', Auth::user()->id)->get();
 			if(count($vReqThesis) > 0) {			
 				$thesis_id = $vReqThesis[0]->id;				
-			echo 	$request_detail_id = $vReqThesis[0]->request_detail_id;
+				$request_detail_id = $vReqThesis[0]->request_detail_id;
 				$requested = 1;
 				$item = Item::find($thesis_id);
 			}			
@@ -445,13 +444,6 @@ class MythesisController extends Controller
 			else
 				$vTermProgressStat = 1;
 		}
-
-
-		$reqDetails = $requsetModel->select('thesis_request_details.*')
-		->join('items','items.request_detail_id','=','thesis_request_details.id')
-		->where(['thesis_request_details.id'=> $request_detail_id])->get();
-
-		dd($reqDetails);
 		
         return view($vResourceFile, [
             'item' => $item->load('tags'),
@@ -468,7 +460,7 @@ class MythesisController extends Controller
 																$query->where(['role_id' => 2,"manager_flag" => 1])
 																->orWhere('role_id','=',3);
 															})
-													->where('status','=',1)->get(['id', 'name','program_availability','availabe_flage']),
+													->where('status','=',1)->orderBy('name','ASC')->get(['id', 'name','program_availability','availabe_flage']),
 			'prefsupervisor' => $userModel->select('users.id','users.name','users.email','users.program_availability','users.availabe_flage')
 							            ->join('item_assignments','item_assignments.user_id','=','users.id')
 							            ->where(['item_assignments.item_id' => $thesis_id, 'item_assignments.request_detail_id'=> $request_detail_id,
@@ -476,7 +468,7 @@ class MythesisController extends Controller
 			'panelmembers' => $userModel->select('users.id','users.name','users.email')
 							            ->join('panel_members','panel_members.user_id','=','users.id')
 							            ->where(['panel_members.item_id' => $thesis_id,
-							        		'panel_members.status' => 1])->get(),
+							        		'panel_members.status' => 1])->orderBy('users.name','ASC')->get(),
 			'groupowner' => $userModel->select('users.id','users.name','users.email')
 							            ->join('items','items.requested_by','=','users.id')
 							            ->where(['items.id' => $thesis_id, 'items.request_detail_id' => $request_detail_id])->get(),
@@ -3481,10 +3473,10 @@ class MythesisController extends Controller
 						$vDescription = Auth::user()->name." successfully approved Term - I Minutes 5 file";
 						break;
 					case "chapter1report":
-						$vDescription = Auth::user()->name." successfully approved Term - I Chapter - I report file";
+						$vDescription = Auth::user()->name." successfully approved Term - I Chapter on Thesis Proposal file";
 						break;
 					case "chapter2report":
-						$vDescription = Auth::user()->name." successfully approved Term - I Chapter - II report file";
+						$vDescription = Auth::user()->name." successfully approved Term - I Chapter on Theoretical Background file";
 					case "otherdocumsnts":
 						$vDescription = Auth::user()->name." successfully approved Term - I Other Document file";
 						break;	
@@ -3515,10 +3507,10 @@ class MythesisController extends Controller
 						$vDescription = Auth::user()->name." successfully approved Term - II Minutes 5 file";
 						break;
 					case "chapter1report":
-						$vDescription = Auth::user()->name." successfully approved Term - II Chapter - I report file";
+						$vDescription = Auth::user()->name." successfully approved Term - II Chapter on Thesis Proposal file";
 						break;
 					case "chapter2report":
-						$vDescription = Auth::user()->name." successfully approved Term - II Chapter - II report file";
+						$vDescription = Auth::user()->name." successfully approved Term - II Chapter on Theoretical Background file";
 					case "otherdocumsnts":
 						$vDescription = Auth::user()->name." successfully approved Term - II Other Document file";
 						break;									
@@ -3549,10 +3541,10 @@ class MythesisController extends Controller
 						$vDescription = Auth::user()->name." successfully approved Term - III Minutes 5 file";
 						break;
 					case "chapter1report":
-						$vDescription = Auth::user()->name." successfully approved Term - III Chapter - I report file";
+						$vDescription = Auth::user()->name." successfully approved Term - III Chapter on Thesis Proposal file";
 						break;
 					case "chapter2report":
-						$vDescription = Auth::user()->name." successfully approved Term - III Chapter - II report file";
+						$vDescription = Auth::user()->name." successfully approved Term - III Chapter on Theoretical Background file";
 						break;
 					case "otherdocumsnts":
 						$vDescription = Auth::user()->name." successfully approved Term - III Other Document file";

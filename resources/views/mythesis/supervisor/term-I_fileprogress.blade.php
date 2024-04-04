@@ -493,7 +493,7 @@
 							<div class="row">	
 								<div class="col-1">&nbsp;</div>
 								<div class="col-3 form_chg text-right pt-2">
-									<p>{{ __('Chapter - I Report') }}:</p>
+									<p>{{ __('Chapter on Thesis Proposal') }}:</p>
 								</div>	
 								@if($progress->upload_file_status == 0 || (auth()->user()->role_id == 2 && $progress->approval_status != 1))									
 									<div class="col-8 text-left">
@@ -569,7 +569,7 @@
 								<div class="row">	
 									<div class="col-1">&nbsp;</div>
 									<div class="col-3 form_chg text-right pt-2">
-										<p>{{ __('Chapter - 1 Grade') }}:</p>
+										<p>{{ __('Chapter on Thesis Proposal Grade') }}:</p>
 									</div>
 									<div class="col-8 cht_text pt-1">
 										<a rel="tooltip" class="btn bt_styl text-capitalize" style="padding: 0.40625rem 0.90rem;line-height: 0.90;" href="javascript:void(0)" onclick="funViewRubric(1,1)" data-original-title="" title="">View Grade</a>
@@ -582,7 +582,7 @@
 										<input type="hidden" name="proposalrubric_flag" id="proposalrubric_flag" value="0" /> 
 										<div class="col-1">&nbsp;</div>
 										<div class="col-3 form_chg text-right pt-2">
-											<p>{{ __('Chapter - 1 Grade') }}:</p>
+											<p>{{ __('Chapter on Thesis Proposal Grade') }}:</p>
 										</div>						  	 
 										<div class="col-8 text-left">
 											<a rel="tooltip" class="btn bt_styl text-capitalize" style="padding: 0.60625rem 0.60rem;line-height: 0.90; font-size: 16px;" href="javascript:void(0)" onclick="funPrepareRubric(1,1)" data-original-title="" title="">Enter Grade</a>
@@ -596,7 +596,7 @@
 								<input type="hidden" name="chapter1report_flag" id="chapter1report_flag" value="0" /> 
 								<div class="col-1">&nbsp;</div>
 								<div class="col-3 form_chg text-right pt-2">
-									<p>{{ __('Chapter - I Report') }}:</p>
+									<p>{{ __('Chapter on Thesis Proposal') }}:</p>
 								</div>
 								@if($vProposalFileEnable == 3)							  	 
 									<div class="col-8 text-left">
@@ -633,7 +633,7 @@
 							<div class="row">	
 								<div class="col-1">&nbsp;</div>
 								<div class="col-3 form_chg text-right pt-2">
-									<p>{{ __('Chapter - II Report') }}:</p>
+									<p>{{ __('Chapter on Theoretical Background') }}:</p>
 								</div>	
 								@if($progress->upload_file_status == 0 || (auth()->user()->role_id == 2 && $progress->approval_status != 1))
 									<div class="col-8 text-left">
@@ -704,7 +704,7 @@
 								<input type="hidden" name="chapter2report_flag" id="chapter2report_flag" value="0" /> 
 								<div class="col-1">&nbsp;</div>
 								<div class="col-3 form_chg text-right pt-2">
-									<p>{{ __('Chapter - II Report') }}:</p>
+									<p>{{ __('Chapter on Theoretical Background') }}:</p>
 								</div>
 								@if($vProposalFileEnable == 7)						  	 
 									<div class="col-8 text-left">
@@ -882,8 +882,8 @@
 							<table class="table">    
 								<tbody style="border:2px solid #ddd;">							
 									<tr class="cbold_text" style="background-color:#B5DBEC">
-										<td style="text-align:center; border-right: solid 2px #ddd;">Chapter - I  &nbsp;&nbsp;&nbsp;(30% Score)</td>
-										<td style="text-align:center; border-right: solid 2px #ddd;">Chapter - II &nbsp;&nbsp;&nbsp;(40%  Score)</td>
+										<td style="text-align:center; border-right: solid 2px #ddd;">Chapter on Thesis Proposal &nbsp;&nbsp;&nbsp;(30% Score)</td>
+										<td style="text-align:center; border-right: solid 2px #ddd;">Chapter on Theoretical Background &nbsp;&nbsp;&nbsp;(40%  Score)</td>
 										<td style="text-align:center; border-right: solid 2px #ddd;">Presentation &nbsp;&nbsp;&nbsp;(30% Score)</td>							
 									</tr>
 									<tr class="sid_text">

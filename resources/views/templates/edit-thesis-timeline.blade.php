@@ -98,7 +98,7 @@
                 </div>
                 <div class="row">
                   <div class="col-sm-2">&nbsp;</div>
-                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter - I Completion Date') }}</label>
+                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter on Thesis Proposal Completion Date') }}</label>
                   <div class="col-sm-2">
                     <div class="form-group view_word {{ $errors->has('term1chapter1') ? ' has-danger' : '' }}">
                       <input type="text"  name="term1chapter1" id="term1chapter1" placeholder="{{ __('Select date') }}" class="form-control datetimepicker" value="{{ old('term1meet3', ($timelineinfo[0]->term1chapter1 ? \Carbon\Carbon::parse($timelineinfo[0]->term1chapter1)->format('d-m-Y') : '')) }}"/>            
@@ -128,7 +128,7 @@
                 </div>
                 <div class="row">
                   <div class="col-sm-2">&nbsp;</div>
-                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter - II Completion Date') }}</label>
+                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter on Theoretical Background Completion Date') }}</label>
                   <div class="col-sm-2">
                     <div class="form-group view_word {{ $errors->has('term1chapter2') ? ' has-danger' : '' }}">
                       <input type="text"  name="term1chapter2" id="term1chapter2" placeholder="{{ __('Select date') }}" class="form-control datetimepicker" value="{{ old('term1meet5', ($timelineinfo[0]->term1chapter2 ? \Carbon\Carbon::parse($timelineinfo[0]->term1chapter2)->format('d-m-Y') : '')) }}"/>            
@@ -186,16 +186,16 @@
                     </div>
                   </div>                                  
                 </div>
-                <div class="row">
+                {{-- <div class="row">
                   <div class="col-sm-2">&nbsp;</div>
-                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter - I Completion Date') }}</label>
+                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter on Thesis Proposal Completion Date') }}</label>
                   <div class="col-sm-2">
                     <div class="form-group view_word {{ $errors->has('term2chapter1') ? ' has-danger' : '' }}">
                       <input type="text"  name="term2chapter1" id="term2chapter1" placeholder="{{ __('Select date') }}" class="form-control datetimepicker" value="{{ old('term2date', ($timelineinfo[0]->term2chapter1 ? \Carbon\Carbon::parse($timelineinfo[0]->term2chapter1)->format('d-m-Y') : '')) }}"/>            
                       @include('alerts.feedback', ['field' => 'term2chapter1'])
                     </div>
                   </div>                                  
-                </div>
+                </div> --}}
                 <div class="row">
                   <div class="col-sm-2">&nbsp;</div>                  
                   <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Meeting  Minutes - 4 Completion Date') }}</label>
@@ -218,7 +218,7 @@
                 </div>
                 <div class="row">
                   <div class="col-sm-2">&nbsp;</div>
-                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Chapter - II Completion Date') }}</label>
+                  <label class="col-sm-4 col-form-label form_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ __('Thesis Report Completion Date') }}</label>
                   <div class="col-sm-2">
                     <div class="form-group view_word {{ $errors->has('term2chapter2') ? ' has-danger' : '' }}">
                       <input type="text"  name="term2chapter2" id="term2chapter2" placeholder="{{ __('Select date') }}" class="form-control datetimepicker" value="{{ old('term2date', ($timelineinfo[0]->term2chapter2 ? \Carbon\Carbon::parse($timelineinfo[0]->term2chapter2)->format('d-m-Y') : '')) }}"/>            

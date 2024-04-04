@@ -204,7 +204,7 @@ Manager:
 					<div class="row">	
 						<div class="col-1">&nbsp;</div>
 						<div class="col-3 form_chg text-right pt-2">
-							<p><span class="mark">*</span>{{ __('Chapter - I Report') }}:</p>
+							<p><span class="mark">*</span>{{ __('Chapter on Thesis Proposal') }}:</p>
 						</div>	
 						@if($progress->student_upload_status != 2)
 							@php
@@ -250,7 +250,7 @@ Manager:
 						<input type="hidden" name="chapter1report_flag" id="chapter1report_flag" value="0" /> 
 						<div class="col-1">&nbsp;</div>
 						<div class="col-3 form_chg text-right pt-2">
-							<p><span class="mark">*</span>{{ __('Chapter - I Report') }}:</p>
+							<p><span class="mark">*</span>{{ __('Chapter on Thesis Proposal') }}:</p>
 						</div>
 						@if($vProposalFileEnable == 3)						  	 
 							<div class="col-8 text-left">
@@ -313,7 +313,7 @@ Manager:
 									@endif	
 								@endif
 							@elseif(!empty($aMeetingLogArray[3]))
-								@if($aMeetingLogArray[3]->meeting_log_seq == 3 && $aMeetingLogArray[3]->supervisor_approval_status == 2 && $vProposalFileEnable == 4)
+								@if($aMeetingLogArray[3]->meeting_log_seq == 3)
 									@php
 										$vStudentCompleted = 0;
 									@endphp
@@ -340,7 +340,7 @@ Manager:
 					<div class="row">	
 						<div class="col-1">&nbsp;</div>
 						<div class="col-3 form_chg text-right pt-2">
-							<p><span class="mark">*</span>{{ __('Chapter - II Report') }}:</p>
+							<p><span class="mark">*</span>{{ __('Chapter on Theoretical Background') }}:</p>
 						</div>	
 						@if($progress->student_upload_status != 2)
 							@php
@@ -383,7 +383,7 @@ Manager:
 						<input type="hidden" name="chapter2report_flag" id="chapter2report_flag" value="0" /> 
 						<div class="col-1">&nbsp;</div>
 						<div class="col-3 form_chg text-right pt-2">
-							<p><span class="mark">*</span>{{ __('Chapter - II Report') }}:</p>
+							<p><span class="mark">*</span>{{ __('Chapter on Theoretical Background') }}:</p>
 						</div>
 						@if($vProposalFileEnable == 7)						  	 
 							<div class="col-8 text-left">
@@ -434,7 +434,7 @@ Manager:
 									@endif
 								@endif
 							@elseif(!empty($aMeetingLogArray[4]))
-								@if($aMeetingLogArray[4]->meeting_log_seq == 4 && $aMeetingLogArray[4]->supervisor_approval_status == 2 && $vProposalFileEnable == 6)
+								@if($aMeetingLogArray[4]->meeting_log_seq == 4)
 									@php
 										$vStudentCompleted = 0;
 									@endphp

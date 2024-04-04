@@ -499,7 +499,7 @@
 					<div class="fileinput fileinput-new cht_text" data-provides="fileinput">
 						@if(count($aPanelRubricInfo) > 0)
 							<div style="padding:0px; padding-top:12px;">
-								<a rel="tooltip" class="btn bt_styl text-capitalize" style="padding: 0.40625rem 0.90rem;line-height: 0.90;" href="javascript:void(0)" onclick="funViewRubric(1,2,{{$panelmembers[$memloop]->id}})" data-original-title="" title="">View Grade</a>
+								<a rel="tooltip" class="btn bt_styl text-capitalize" style="padding: 0.40625rem 0.90rem;line-height: 0.90;" href="javascript:void(0)" onclick="funViewRubric(2,3,{{$panelmembers[$memloop]->id}})" data-original-title="" title="">View Grade</a>
 							</div>
 						@elseif($term2progressdetails[0]->approval_status == 3 && count($aPanelRubricInfo) == 0)
 							<div style="padding:0px; padding-top:12px;">{{ __('Grading Inprogress') }}</div>
@@ -529,14 +529,14 @@
 						</tr>
 						<tr class="cbold_text">							
 							@for($score_loop = 0; $score_loop < count($panelmembers); $score_loop++)
-								<td style="text-align:center; border-right: solid 2px #ddd;">Chapter - II<br />40%  Score</td>
+								<td style="text-align:center; border-right: solid 2px #ddd;">Final Report<br />70%  Score</td>
 								<td style="text-align:center; border-right: solid 2px #ddd;">Presentation<br />30% Score</td>
 							@endfor
 						</tr>
 						<tr class="sid_text">							
 							@for($score_loop = 0; $score_loop < count($panelmembers); $score_loop++)
 								<td style="text-align:center; border-right: solid 2px #ddd;">
-									{{ !empty($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2']) ? number_format((($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2']*40)/100), 2, ".", "") : '--'}}
+									{{ !empty($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2']) ? number_format((($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2']*70)/100), 2, ".", "") : '--'}}
 								</td>
 								<td style="text-align:center; border-right: solid 2px #ddd;">
 									{{ !empty($aExaminerScore[$panelmembers[$score_loop]->id]['presentation']) ? number_format((($aExaminerScore[$panelmembers[$score_loop]->id]['presentation']*30)/100), 2, ".", "") : '--'}}
@@ -561,7 +561,7 @@
 				if(count($panelmembers) > 0){
 					for($score_loop = 0; $score_loop < count($panelmembers); $score_loop++){
 						if(!empty($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2'])){
-							$vOverallChaper2Score += ($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2']*40)/100;
+							$vOverallChaper2Score += ($aExaminerScore[$panelmembers[$score_loop]->id]['chapter2']*70)/100;
 							$vSuccessRubric++;
 						}
 						if(!empty($aExaminerScore[$panelmembers[$score_loop]->id]['presentation'])){
@@ -622,7 +622,7 @@
 				</div>																		
 			@endif
 		@endif
-		@if(auth()->user()->role_id == 3 || (auth()->user()->role_id == 2 && $item->assigned_to == auth()->user()->id && request()->get('action') == "ac"))								
+		@if(auth()->user()->role_id == 3 || (auth()->user()->role_id == 2 && $item->assigned_to == auth()->user()->id && request()->get('action') == "ac"))
 			<div class="row">
 				@if($term2progressdetails[0]->upload_file_status != 1)
 					<div class="col-1">&nbsp;</div>

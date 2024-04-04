@@ -101,7 +101,7 @@
 																			@else
 																				<td class="cbold_text">{{ __('Prefered Supervisor') }}</td>															
 																			@endif																
-																			<td class="sid_text">{{$prefsupervisor[0]->name}}</td>
+																			<td class="sid_text">{{ !empty($prefsupervisor) ? $prefsupervisor[0]->name : '--'}}</td>
 																		</tr>														
 																		<tr>
 																			<td class="cbold_text">{{ __('Supervisor Accept Status') }}</td>
@@ -144,7 +144,7 @@
 																<select class="selectpicker col-sm-5 pl-0 pr-0" name="supervisor_id" id="supervisor_id" data-style="select-with-transition" title="" data-size="100">
 																<option value="">-</option>
 																@foreach ($supervisors as $supervisor)
-																<option value="{{ $supervisor->id }}" {{ $supervisor->id == $prefsupervisor[0]->id ? 'selected' : '' }}>{{ $supervisor->name }}</option>
+																<option value="{{ $supervisor->id }}" {{ !empty($prefsupervisor) ? ($supervisor->id == $prefsupervisor[0]->id ? 'selected' : '') : '' }}>{{ $supervisor->name }}</option>
 																@endforeach
 															  </select>
 															  @include('alerts.feedback', ['field' => 'supervisor_id'])
@@ -227,7 +227,7 @@
 																		<div id="approvefileuploader" style="line-height: 25px;">Select Files</div>
 																	</div>
 															</div>
-														</div>										
+														</div>
 														@if($requestdetails[0]->manager_approval_status == 0)
 														<div class="row" style="text-align:center;">
 															<div class="col-sm-2">&nbsp;</div>
